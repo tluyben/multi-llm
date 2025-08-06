@@ -1,0 +1,30 @@
+{
+  "name": "multi-llm",
+  "version": "1.0.0",
+  "description": "A unified interface to use LLMs across all platforms with support for streaming, MCP tools, and result parsing",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "jest",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": ["llm", "ai", "openai", "anthropic", "groq", "cerebras", "ollama", "openrouter", "azure", "mcp"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/jest": "^29.0.0",
+    "jest": "^29.0.0",
+    "ts-jest": "^29.0.0",
+    "dotenv": "^16.0.0",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "axios": "^1.6.0"
+  },
+  "files": [
+    "dist/**/*"
+  ]
+}
