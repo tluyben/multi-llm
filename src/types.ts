@@ -11,7 +11,13 @@ export interface ModelInfo {
   description?: string;
 }
 
-export interface ChatOptions {
+export interface RetryOptions {
+  retries?: number;               // Number of retry attempts (default: 1)
+  retryInterval?: number;         // Initial retry interval in milliseconds (default: 1000)
+  retryBackoff?: number;          // Backoff multiplier (default: 2)
+}
+
+export interface ChatOptions extends RetryOptions {
   temperature?: number;
   maxTokens?: number;
   topP?: number;

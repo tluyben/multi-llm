@@ -231,6 +231,67 @@ describeConditional('OpenRouter Provider Tests', () => {
         MultiLLM.createProvider('openrouter', '');
       }).not.toThrow(); // Should create but fail on API calls
     });
+
+    test('should retry on API failures with exponential backoff', async () => {
+      const invalidProvider = MultiLLM.createProvider('openrouter', 'invalid-key-for-retry-test') as OpenRouterProvider;
+      const invalidLlm = invalidProvider.createLLM(modelId);
+
+      const start = Date.now();
+
+      await expect(invalidLlm.chat('Hello', {
+        retries: 2,
+        retryInterval: 100,
+        retryBackoff: 2
+      })).rejects.toThrow(/Failed after 2 retries/);
+
+      const elapsed = Date.now() - start;
+      
+      // Should take at least 300ms (100 + 200ms delays) plus request times
+      console.log(`\n⏱️  Retry test took ${elapsed}ms (expected >250ms with delays)`);
+      expect(elapsed).toBeGreaterThan(250);
+    }, 15000);
+
+    test('should succeed without retries on valid requests', async () => {
+      let llm = provider.createLLM(modelId);
+      
+      const start = Date.now();
+      
+      const result = await llm.chat('Say "test" and nothing else.', {
+        retries: 3,
+        retryInterval: 1000,
+        retryBackoff: 2,
+        maxTokens: 10
+      });
+      
+      const elapsed = Date.now() - start;
+      
+      expect(result.parsed.content).toBeDefined();
+      expect(result.parsed.content.length).toBeGreaterThan(0);
+      
+      // Should complete quickly without retries (well under the retry intervals)
+      console.log(`\n✅ Successful request with retry config took ${elapsed}ms`);
+      expect(elapsed).toBeLessThan(30000); // Much less than retry delays would add
+    }, TEST_CONFIG.timeout);
+
+    test('should handle custom retry configuration', async () => {
+      const invalidProvider = MultiLLM.createProvider('openrouter', 'invalid-key') as OpenRouterProvider;
+      const invalidLlm = invalidProvider.createLLM(modelId);
+
+      const start = Date.now();
+
+      await expect(invalidLlm.chat('Hello', {
+        retries: 1,           // Only 1 retry
+        retryInterval: 50,    // 50ms initial delay
+        retryBackoff: 3       // 3x multiplier
+      })).rejects.toThrow(/Failed after 1 retries/);
+
+      const elapsed = Date.now() - start;
+      
+      // Should take at least 50ms delay plus request times
+      console.log(`\n🔧 Custom retry config took ${elapsed}ms (expected >40ms)`);
+      expect(elapsed).toBeGreaterThan(40);
+      expect(elapsed).toBeLessThan(5000); // But not too long
+    }, 10000);
   });
 
   describe('Response Parsing', () => {

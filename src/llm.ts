@@ -1,5 +1,6 @@
 import { Provider } from './provider';
 import { ChatMessage, ChatOptions, ChatResult, StreamCallback } from './types';
+import { executeWithRetry, getRetryConfig } from './utils/retry';
 import { spawn, ChildProcess } from 'child_process';
 
 export class LLM {
@@ -34,7 +35,13 @@ export class LLM {
       messages.unshift({ role: 'system', content: options.system });
     }
 
-    return this.provider.chat(this.modelId, messages, options, streamCallback);
+    const retryConfig = getRetryConfig(options);
+    
+    return executeWithRetry(
+      async () => this.provider.chat(this.modelId, messages, options, streamCallback),
+      retryConfig,
+      `${this.provider.constructor.name}:${this.modelId}`
+    );
   }
 
   dispose(): void {

@@ -10,7 +10,8 @@ This document tracks the development progress of the multi-llm npm package creat
 
 **Key Features**:
 - Unified API across all providers
-- Streaming and non-streaming support  
+- Streaming and non-streaming support
+- Intelligent retry system with exponential backoff
 - Response parsing (code blocks, thinking extraction)
 - MCP (Model Context Protocol) integration
 - Full TypeScript support
@@ -58,6 +59,10 @@ This document tracks the development progress of the multi-llm npm package creat
   - Clean content separation
 - [x] **Streaming Handler**: Real-time chunk processing for all providers
 - [x] **Usage Statistics**: Token counting and performance metrics
+- [x] **Retry System**: Exponential backoff retry logic with customizable configuration
+  - Configurable retry attempts, intervals, and backoff multipliers
+  - Error context logging for debugging
+  - Production-ready error handling
 
 ### Testing Infrastructure
 - [x] **Jest Configuration**: Set up with ts-jest and proper TypeScript support

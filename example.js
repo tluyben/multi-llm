@@ -19,6 +19,22 @@ async function main() {
   
   console.log('Response:', result.parsed.content);
   console.log('Usage:', result.usage);
+
+  // Retry example - robust chat with error handling
+  console.log('\n=== Retry Configuration Example ===');
+  try {
+    const robustResult = await gpt4.chat('What are the top 3 programming languages in 2025?', {
+      temperature: 0.5,
+      maxTokens: 150,
+      retries: 3,                    // Retry up to 3 times on failure
+      retryInterval: 1000,           // Start with 1 second delay
+      retryBackoff: 2                // Double delay each retry (1s, 2s, 4s)
+    });
+    
+    console.log('Robust response:', robustResult.parsed.content);
+  } catch (error) {
+    console.log('Request failed after retries:', error.message);
+  }
   
   // Streaming chat
   console.log('\n=== Streaming Example ===');

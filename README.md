@@ -6,6 +6,7 @@ A unified TypeScript/JavaScript package to use LLMs across **ALL** platforms wit
 
 - **🌐 Universal Provider Support**: **17 Major Providers** including OpenAI, Anthropic, Google Gemini, Cohere, Mistral AI, Together AI, Fireworks AI, OpenRouter, Groq, Cerebras, Ollama, Azure OpenAI, Perplexity, DeepInfra, Replicate, HuggingFace, AWS Bedrock
 - **⚡ Streaming & Non-Streaming**: Real-time streaming or batch processing
+- **🔄 Intelligent Retry System**: Exponential backoff retry logic for handling API failures and rate limits
 - **🧠 Smart Response Parsing**: Automatic extraction of code blocks, thinking sections, and structured content  
 - **🔧 MCP Integration**: Add Model Context Protocol tools to enhance capabilities
 - **📘 TypeScript Support**: Full type definitions and IntelliSense
@@ -41,6 +42,18 @@ const result = await llm.chat('What is the capital of France?', {
 });
 
 console.log(result.parsed.content);
+
+// Chat with retry configuration for handling API failures
+const robustResult = await llm.chat('What is the capital of France?', {
+  temperature: 0.7,
+  maxTokens: 100,
+  system: 'You are a helpful geography assistant',
+  retries: 3,                    // Retry up to 3 times on failure (default: 1)
+  retryInterval: 1000,           // Initial retry delay: 1 second (default: 1000ms)
+  retryBackoff: 2                // Exponential backoff multiplier (default: 2)
+});
+
+console.log(robustResult.parsed.content);
 
 // Streaming chat
 const streamResult = await llm.chat('Tell me a story', {
@@ -180,6 +193,98 @@ interface ChatResult {
     outputTokens: number;
     totalTokens: number;
   };
+}
+```
+
+## Retry Configuration
+
+Multi-LLM includes built-in retry functionality with exponential backoff to handle temporary API failures, rate limits, and network issues.
+
+### Basic Retry Usage
+
+```typescript
+const result = await llm.chat('Your message', {
+  retries: 3,                    // Number of retry attempts (default: 1)
+  retryInterval: 1000,           // Initial retry delay in ms (default: 1000)
+  retryBackoff: 2,               // Backoff multiplier (default: 2)
+  // ... other chat options
+});
+```
+
+### Retry Behavior
+
+The retry system implements **exponential backoff**:
+- **1st retry**: After `retryInterval` ms (e.g., 1000ms)
+- **2nd retry**: After `retryInterval × retryBackoff` ms (e.g., 2000ms)  
+- **3rd retry**: After `retryInterval × retryBackoff²` ms (e.g., 4000ms)
+
+### Retry Examples
+
+```typescript
+// Conservative retry for important requests
+const result = await llm.chat('Critical business query', {
+  retries: 5,
+  retryInterval: 2000,     // Start with 2 second delay
+  retryBackoff: 1.5,       // Slower backoff: 2s, 3s, 4.5s, 6.75s, 10.125s
+  maxTokens: 500
+});
+
+// Quick retry for real-time applications  
+const result = await llm.chat('Fast query', {
+  retries: 2,
+  retryInterval: 200,      // Quick 200ms initial delay
+  retryBackoff: 3,         // Aggressive backoff: 200ms, 600ms
+  maxTokens: 50
+});
+
+// Disable retries (equivalent to retries: 0)
+const result = await llm.chat('One-shot request', {
+  retries: 0,              // No retries, fail immediately
+  maxTokens: 100
+});
+```
+
+### Error Handling with Retries
+
+```typescript
+try {
+  const result = await llm.chat('Your message', {
+    retries: 3,
+    retryInterval: 1000,
+    retryBackoff: 2
+  });
+  
+  console.log(result.parsed.content);
+} catch (error) {
+  // After exhausting all retries
+  console.error('Request failed:', error.message);
+  // Error message includes retry context:
+  // "Failed after 3 retries (ProviderName:model-id): Original error message"
+}
+```
+
+### When Retries Are Triggered
+
+Retries are automatically triggered for:
+- **Network errors** (connection timeouts, DNS failures)
+- **Rate limit errors** (429 status codes)
+- **Server errors** (5xx status codes)
+- **Authentication failures** (invalid API keys)
+- **Model unavailability** (temporary model issues)
+
+Retries are **NOT** triggered for:
+- **Client errors** (400, 404 - malformed requests)  
+- **Successful responses** (2xx status codes)
+- **Streaming responses** (retries could cause duplicate content)
+
+### Default Configuration
+
+If no retry options are specified, the system uses:
+```typescript
+{
+  retries: 1,           // 1 retry attempt
+  retryInterval: 1000,  // 1 second initial delay  
+  retryBackoff: 2       // Double delay each retry
 }
 ```
 
@@ -407,6 +512,12 @@ interface ChatOptions {
   topK?: number;            // Top-K sampling parameter  
   system?: string;          // System message
   stream?: boolean;         // Automatically set based on callback presence
+  
+  // Retry configuration
+  retries?: number;         // Number of retry attempts (default: 1)
+  retryInterval?: number;   // Initial retry delay in ms (default: 1000)
+  retryBackoff?: number;    // Exponential backoff multiplier (default: 2)
+  
   [key: string]: any;       // Provider-specific options
 }
 ```
@@ -430,6 +541,15 @@ See `example.js` for comprehensive usage examples across all providers.
 MIT License - see LICENSE file for details.
 
 ## Changelog
+
+### v1.1.0
+- **🔄 Intelligent Retry System**: Added exponential backoff retry logic with customizable configuration
+  - `retries`: Number of retry attempts (default: 1)
+  - `retryInterval`: Initial retry delay in milliseconds (default: 1000)  
+  - `retryBackoff`: Exponential backoff multiplier (default: 2)
+- **🧪 Comprehensive Retry Testing**: 13 new test cases covering retry behavior, backoff timing, and error handling
+- **📚 Enhanced Documentation**: Complete retry configuration examples and best practices
+- **⚡ Production Ready**: Robust error handling for network issues, rate limits, and API failures
 
 ### v1.0.0
 - Initial release with support for **17 providers**:
