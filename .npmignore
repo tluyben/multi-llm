@@ -1,0 +1,24 @@
+# Source files (only publish compiled dist)
+src/
+tests/
+coverage/
+
+# Development files
+.env
+.env.example
+jest.config.js
+tsconfig.json
+CLAUDE.md
+
+# Logs and temporary files
+*.log
+.DS_Store
+.vscode/
+.idea/
+
+# Node modules
+node_modules/
+
+# Git
+.git/
+.gitignore

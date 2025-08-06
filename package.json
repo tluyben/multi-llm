@@ -1,18 +1,57 @@
 {
   "name": "multi-llm",
   "version": "1.0.0",
-  "description": "A unified interface to use LLMs across all platforms with support for streaming, MCP tools, and result parsing",
+  "description": "A unified TypeScript/JavaScript package to use LLMs across ALL platforms with support for 17 major providers, streaming, MCP tools, and intelligent response parsing",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
     "test": "jest",
-    "prepublishOnly": "npm run build"
+    "test:coverage": "jest --coverage",
+    "prepublishOnly": "npm run build && npm test",
+    "clean": "rm -rf dist"
   },
-  "keywords": ["llm", "ai", "openai", "anthropic", "groq", "cerebras", "ollama", "openrouter", "azure", "mcp"],
+  "keywords": [
+    "llm",
+    "ai",
+    "openai", 
+    "anthropic",
+    "claude",
+    "chatgpt",
+    "gemini",
+    "cohere",
+    "mistral",
+    "groq",
+    "cerebras",
+    "ollama",
+    "openrouter",
+    "azure",
+    "perplexity",
+    "deepinfra",
+    "replicate",
+    "huggingface",
+    "bedrock",
+    "aws",
+    "google",
+    "together",
+    "fireworks",
+    "streaming",
+    "mcp",
+    "typescript",
+    "javascript",
+    "nodejs"
+  ],
   "author": "Tycho Luyben",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tluyben/multi-llm.git"
+  },
+  "bugs": {
+    "url": "https://github.com/tluyben/multi-llm/issues"
+  },
+  "homepage": "https://github.com/tluyben/multi-llm#readme",
   "devDependencies": {
     "@types/node": "^20.0.0",
     "@types/jest": "^29.0.0",
