@@ -1,6 +1,6 @@
 {
   "name": "multi-llm",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "A unified TypeScript/JavaScript package to use LLMs across ALL platforms with support for 17 major providers, streaming, MCP tools, and intelligent response parsing",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
