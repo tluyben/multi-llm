@@ -50,4 +50,4 @@ export interface ChatResult {
 
 export type StreamCallback = (chunk: string) => void;
 
-export type ProviderType = 'openai' | 'anthropic' | 'openrouter' | 'groq' | 'cerebras' | 'ollama' | 'azure';
+export type ProviderType = 'openai' | 'anthropic' | 'openrouter' | 'groq' | 'cerebras' | 'ollama' | 'azure' | 'google' | 'cohere' | 'mistral' | 'together' | 'fireworks' | 'perplexity' | 'deepinfra' | 'replicate' | 'huggingface' | 'bedrock';

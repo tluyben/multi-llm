@@ -26,6 +26,26 @@ export const checkEnvironmentVariables = (provider: string): boolean => {
       return !!process.env.OLLAMA_MODEL;
     case 'azure':
       return !!(process.env.AZURE_API_KEY && process.env.AZURE_BASE_URL && process.env.AZURE_MODEL);
+    case 'google':
+      return !!(process.env.GOOGLE_API_KEY && process.env.GOOGLE_MODEL);
+    case 'cohere':
+      return !!(process.env.COHERE_API_KEY && process.env.COHERE_MODEL);
+    case 'mistral':
+      return !!(process.env.MISTRAL_API_KEY && process.env.MISTRAL_MODEL);
+    case 'together':
+      return !!(process.env.TOGETHER_API_KEY && process.env.TOGETHER_MODEL);
+    case 'fireworks':
+      return !!(process.env.FIREWORKS_API_KEY && process.env.FIREWORKS_MODEL);
+    case 'perplexity':
+      return !!(process.env.PERPLEXITY_API_KEY && process.env.PERPLEXITY_MODEL);
+    case 'deepinfra':
+      return !!(process.env.DEEPINFRA_API_KEY && process.env.DEEPINFRA_MODEL);
+    case 'replicate':
+      return !!(process.env.REPLICATE_API_KEY && process.env.REPLICATE_MODEL);
+    case 'huggingface':
+      return !!(process.env.HUGGINGFACE_API_KEY && process.env.HUGGINGFACE_MODEL);
+    case 'bedrock':
+      return !!(process.env.BEDROCK_API_KEY && process.env.BEDROCK_MODEL && process.env.BEDROCK_REGION);
     default:
       return false;
   }
@@ -33,7 +53,7 @@ export const checkEnvironmentVariables = (provider: string): boolean => {
 
 // Get all available providers based on environment variables
 export const getAvailableProviders = (): string[] => {
-  const allProviders = ['openrouter', 'openai', 'anthropic', 'groq', 'cerebras', 'ollama', 'azure'];
+  const allProviders = ['openrouter', 'openai', 'anthropic', 'groq', 'cerebras', 'ollama', 'azure', 'google', 'cohere', 'mistral', 'together', 'fireworks', 'perplexity', 'deepinfra', 'replicate', 'huggingface', 'bedrock'];
   return allProviders.filter(provider => checkEnvironmentVariables(provider));
 };
 
@@ -46,7 +66,17 @@ export const logProviderStatus = (): void => {
     'Groq': { key: 'GROQ_API_KEY', model: 'GROQ_MODEL', extra: undefined },
     'Cerebras': { key: 'CEREBRAS_API_KEY', model: 'CEREBRAS_MODEL', extra: undefined },
     'Ollama': { key: undefined, model: 'OLLAMA_MODEL', extra: undefined },
-    'Azure': { key: 'AZURE_API_KEY', model: 'AZURE_MODEL', extra: 'AZURE_BASE_URL' }
+    'Azure': { key: 'AZURE_API_KEY', model: 'AZURE_MODEL', extra: 'AZURE_BASE_URL' },
+    'Google': { key: 'GOOGLE_API_KEY', model: 'GOOGLE_MODEL', extra: undefined },
+    'Cohere': { key: 'COHERE_API_KEY', model: 'COHERE_MODEL', extra: undefined },
+    'Mistral': { key: 'MISTRAL_API_KEY', model: 'MISTRAL_MODEL', extra: undefined },
+    'Together': { key: 'TOGETHER_API_KEY', model: 'TOGETHER_MODEL', extra: undefined },
+    'Fireworks': { key: 'FIREWORKS_API_KEY', model: 'FIREWORKS_MODEL', extra: undefined },
+    'Perplexity': { key: 'PERPLEXITY_API_KEY', model: 'PERPLEXITY_MODEL', extra: undefined },
+    'DeepInfra': { key: 'DEEPINFRA_API_KEY', model: 'DEEPINFRA_MODEL', extra: undefined },
+    'Replicate': { key: 'REPLICATE_API_KEY', model: 'REPLICATE_MODEL', extra: undefined },
+    'HuggingFace': { key: 'HUGGINGFACE_API_KEY', model: 'HUGGINGFACE_MODEL', extra: undefined },
+    'Bedrock': { key: 'BEDROCK_API_KEY', model: 'BEDROCK_MODEL', extra: 'BEDROCK_REGION' }
   };
 
   console.log('\n📊 Provider Environment Status:');
